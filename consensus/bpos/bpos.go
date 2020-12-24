@@ -914,7 +914,7 @@ func (c *Bpos) Seal(chain consensus.ChainHeaderReader, block *types.Block, resul
 		log.Trace("Out-of-turn signing requested", "wiggle", common.PrettyDuration(wiggle))
 	}
 	// Sign all the things!
-	sighash, err := signFn(accounts.Account{Address: val}, accounts.MimetypeBpos, CongressRLP(header))
+	sighash, err := signFn(accounts.Account{Address: val}, accounts.MimetypeBpos, BposRLP(header))
 	if err != nil {
 		return err
 	}
@@ -971,7 +971,7 @@ func (c *Bpos) Close() error {
 // controlling the validator voting.
 func (c *Bpos) APIs(chain consensus.ChainHeaderReader) []rpc.API {
 	return []rpc.API{{
-		Namespace: "congress",
+		Namespace: "bpos",
 		Version:   "1.0",
 		Service:   &API{chain: chain, bpos: c},
 		Public:    false,
@@ -986,14 +986,14 @@ func SealHash(header *types.Header) (hash common.Hash) {
 	return hash
 }
 
-// CongressRLP returns the rlp bytes which needs to be signed for the proof-of-stake-authority
+// BposRLP returns the rlp bytes which needs to be signed for the proof-of-stake-authority
 // sealing. The RLP to sign consists of the entire header apart from the 65 byte signature
 // contained at the end of the extra data.
 //
 // Note, the method requires the extra data to be at least 65 bytes, otherwise it
 // panics. This is done to avoid accidentally using both forms (signature present
 // or not), which could be abused to produce different hashes for the same header.
-func CongressRLP(header *types.Header) []byte {
+func BposRLP(header *types.Header) []byte {
 	b := new(bytes.Buffer)
 	encodeSigHeader(b, header)
 	return b.Bytes()

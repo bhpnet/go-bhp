@@ -27,8 +27,8 @@ import (
 
 // Genesis hashes to enforce below configs on.
 var (
-	MainnetGenesisHash = common.HexToHash("0x86646d8cbe41f12260a9b1ce57a7d6b33bca79b5238ac27d0336e0c3463f4d44")
-	TestnetGenesisHash = common.HexToHash("0x86646d8cbe41f12260a9b1ce57a7d6b33bca79b5238ac27d0336e0c3463f4d44")
+	MainnetGenesisHash = common.HexToHash("0x4898d79819c39e33d6d8b1dc6a2deed15e9274df0eca1ada247a5d4842eb48cb")
+	TestnetGenesisHash = common.HexToHash("0x4898d79819c39e33d6d8b1dc6a2deed15e9274df0eca1ada247a5d4842eb48cb")
 )
 
 // TrustedCheckpoints associates each known checkpoint with the genesis hash of
@@ -204,7 +204,7 @@ type BposConfig struct {
 
 // String implements the stringer interface, returning the consensus engine details.
 func (b *BposConfig) String() string {
-	return "congress"
+	return "bpos"
 }
 
 // String implements the fmt.Stringer interface.

@@ -140,8 +140,6 @@ func New(stack *node.Node, config *Config) (*Ethereum, error) {
 		p2pServer:         stack.Server(),
 	}
 
-	eth.engine = CreateConsensusEngine(stack, chainConfig, &config.Ethash, config.Miner.Notify, config.Miner.Noverify, chainDb)
-
 	bcVersion := rawdb.ReadDatabaseVersion(chainDb)
 	var dbVer = "<nil>"
 	if bcVersion != nil {

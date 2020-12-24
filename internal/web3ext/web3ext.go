@@ -121,28 +121,28 @@ web3._extend({
 
 const BposJs = `
 web3._extend({
-	property: 'congress',
+	property: 'bpos',
 	methods: [
 		new web3._extend.Method({
 			name: 'getSnapshot',
-			call: 'congress_getSnapshot',
+			call: 'bpos_getSnapshot',
 			params: 1,
 			inputFormatter: [web3._extend.formatters.inputBlockNumberFormatter]
 		}),
 		new web3._extend.Method({
 			name: 'getSnapshotAtHash',
-			call: 'congress_getSnapshotAtHash',
+			call: 'bpos_getSnapshotAtHash',
 			params: 1
 		}),
 		new web3._extend.Method({
 			name: 'getValidators',
-			call: 'congress_getValidators',
+			call: 'bpos_getValidators',
 			params: 1,
 			inputFormatter: [web3._extend.formatters.inputBlockNumberFormatter]
 		}),
 		new web3._extend.Method({
 			name: 'getValidatorsAtHash',
-			call: 'congress_getValidatorsAtHash',
+			call: 'bpos_getValidatorsAtHash',
 			params: 1
 		}),
 	]

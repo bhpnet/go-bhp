@@ -66,7 +66,7 @@ func newSnapshot(config *params.BposConfig, sigcache *lru.ARCCache, number uint6
 
 // loadSnapshot loads an existing snapshot from the database.
 func loadSnapshot(config *params.BposConfig, sigcache *lru.ARCCache, db ethdb.Database, hash common.Hash) (*Snapshot, error) {
-	blob, err := db.Get(append([]byte("congress-"), hash[:]...))
+	blob, err := db.Get(append([]byte("bpos-"), hash[:]...))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (s *Snapshot) store(db ethdb.Database) error {
 	if err != nil {
 		return err
 	}
-	return db.Put(append([]byte("congress-"), s.Hash[:]...), blob)
+	return db.Put(append([]byte("bpos-"), s.Hash[:]...), blob)
 }
 
 // copy creates a deep copy of the snapshot, though not the individual votes.
@@ -151,7 +151,7 @@ func (s *Snapshot) apply(headers []*types.Header, chain consensus.ChainHeaderRea
 		snap.Recents[number] = validator
 
 		// update validators at the first block at epoch
-		if number > 0 && number%s.config.Epoch == 1 {
+		if number > 0 && number%s.config.Epoch == 0 {
 			checkpointHeader := header
 
 			// get validators from headers and use that for new validator set
