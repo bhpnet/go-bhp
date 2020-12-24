@@ -15,38 +15,38 @@ func TestCalcBlockReward(t *testing.T) {
 		want   *big.Int
 	}
 	tests := make([]test, 12)
-	tests[0] = test{0, bhpv1LastHalfBlockReward}
-	tests[1] = test{1, bhpv1LastHalfBlockReward}
+	tests[0] = test{0, bhpv1LastHalfBlockSubsidy}
+	tests[1] = test{1, bhpv1LastHalfBlockSubsidy}
 
 	v1UpgradeHeighDiff := bhpv1UpgradeToV2Height - bhpv1LastHalfHeight
 	tests[2] = test{
-		rewardReductionInterval - 1 - v1UpgradeHeighDiff,
-		bhpv1LastHalfBlockReward}
+		subsidyReductionInterval - 1 - v1UpgradeHeighDiff,
+		bhpv1LastHalfBlockSubsidy}
 	tests[3] = test{
-		rewardReductionInterval - v1UpgradeHeighDiff,
-		new(big.Int).Quo(bhpv1LastHalfBlockReward, big.NewInt(int64(math.Pow(2, 1))))}
+		subsidyReductionInterval - v1UpgradeHeighDiff,
+		new(big.Int).Quo(bhpv1LastHalfBlockSubsidy, big.NewInt(int64(math.Pow(2, 1))))}
 	tests[4] = test{
-		rewardReductionInterval + 1 - v1UpgradeHeighDiff,
-		new(big.Int).Quo(bhpv1LastHalfBlockReward, big.NewInt(int64(math.Pow(2, 1))))}
+		subsidyReductionInterval + 1 - v1UpgradeHeighDiff,
+		new(big.Int).Quo(bhpv1LastHalfBlockSubsidy, big.NewInt(int64(math.Pow(2, 1))))}
 
 	tests[5] = test{
-		rewardReductionInterval*2 - 1 - v1UpgradeHeighDiff,
-		new(big.Int).Quo(bhpv1LastHalfBlockReward, big.NewInt(int64(math.Pow(2, 1))))}
+		subsidyReductionInterval*2 - 1 - v1UpgradeHeighDiff,
+		new(big.Int).Quo(bhpv1LastHalfBlockSubsidy, big.NewInt(int64(math.Pow(2, 1))))}
 	tests[6] = test{
-		rewardReductionInterval*2 - v1UpgradeHeighDiff,
-		new(big.Int).Quo(bhpv1LastHalfBlockReward, big.NewInt(int64(math.Pow(2, 2))))}
+		subsidyReductionInterval*2 - v1UpgradeHeighDiff,
+		new(big.Int).Quo(bhpv1LastHalfBlockSubsidy, big.NewInt(int64(math.Pow(2, 2))))}
 	tests[7] = test{
-		rewardReductionInterval*2 + 1 - v1UpgradeHeighDiff,
-		new(big.Int).Quo(bhpv1LastHalfBlockReward, big.NewInt(int64(math.Pow(2, 2))))}
+		subsidyReductionInterval*2 + 1 - v1UpgradeHeighDiff,
+		new(big.Int).Quo(bhpv1LastHalfBlockSubsidy, big.NewInt(int64(math.Pow(2, 2))))}
 
 	tests[8] = test{
-		rewardReductionInterval*62 - 1 - v1UpgradeHeighDiff,
+		subsidyReductionInterval*62 - 1 - v1UpgradeHeighDiff,
 		big.NewInt(1)}
 	tests[9] = test{
-		rewardReductionInterval*62 - v1UpgradeHeighDiff,
+		subsidyReductionInterval*62 - v1UpgradeHeighDiff,
 		big.NewInt(0)}
 	tests[10] = test{
-		rewardReductionInterval*62 + 1 - v1UpgradeHeighDiff,
+		subsidyReductionInterval*62 + 1 - v1UpgradeHeighDiff,
 		big.NewInt(0)}
 
 	tests[11] = test{

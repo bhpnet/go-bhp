@@ -54,13 +54,13 @@ const (
 	wiggleTime    = 500 * time.Millisecond // Random delay (per validator) to allow concurrent validators
 	maxValidators = 21                     // Max validators allowed to seal.
 
-	bhpv1LastHalfHeight     = uint64(2858888)   // BHPv1 last half height
-	bhpv1UpgradeToV2Height  = uint64(4288888)   // BHPv1 upgrade to v2 height ,about 3 months from last half height
-	rewardReductionInterval = uint64(8_400_000) //84000000 blocks to halve, 15 seconds a block
+	bhpv1LastHalfHeight      = uint64(2858888)   // BHPv1 last half height
+	bhpv1UpgradeToV2Height   = uint64(4288888)   // BHPv1 upgrade to v2 height ,about 3 months from last half height
+	subsidyReductionInterval = uint64(8_400_000) //84000000 blocks to halve, 15 seconds a block
 )
 
 var (
-	bhpv1LastHalfBlockReward = big.NewInt(2.345e+18) // Block reward in wei for BHP v1 last half
+	bhpv1LastHalfBlockSubsidy = big.NewInt(2.345e+18) // Block subsidy in wei for BHP v1 last half
 )
 
 // Bpos proof-of-stake-authority protocol constants.
@@ -572,11 +572,9 @@ func (c *Bpos) Finalize(chain consensus.ChainHeaderReader, header *types.Header,
 		}
 	}
 
-	// execute block reward tx.
-	if len(txs) > 0 {
-		if err := c.trySendBlockReward(chain, header, state); err != nil {
-			return err
-		}
+	// execute block reward.
+	if err := c.trySendBlockReward(chain, header, state); err != nil {
+		return err
 	}
 
 	// do epoch thing at the end, because it will update active validators
@@ -622,11 +620,9 @@ func (c *Bpos) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *ty
 		}
 	}
 
-	// deposit block reward if any tx exists.
-	if len(txs) > 0 {
-		if err := c.trySendBlockReward(chain, header, state); err != nil {
-			panic(err)
-		}
+	// deposit block reward
+	if err := c.trySendBlockReward(chain, header, state); err != nil {
+		panic(err)
 	}
 
 	// do epoch thing at the end, because it will update active validators
@@ -1030,6 +1026,6 @@ func encodeSigHeader(w io.Writer, header *types.Header) {
 func calcBlockSubsidy(height uint64) *big.Int {
 	//Because upgrade from v1 should contine block reward remaining blocks
 	halveHeight := height + bhpv1UpgradeToV2Height - bhpv1LastHalfHeight
-	rsh := uint(halveHeight / rewardReductionInterval)
-	return new(big.Int).Rsh(bhpv1LastHalfBlockReward, rsh)
+	rsh := uint(halveHeight / subsidyReductionInterval)
+	return new(big.Int).Rsh(bhpv1LastHalfBlockSubsidy, rsh)
 }
