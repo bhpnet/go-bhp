@@ -53,6 +53,14 @@ const (
 
 	wiggleTime    = 500 * time.Millisecond // Random delay (per validator) to allow concurrent validators
 	maxValidators = 21                     // Max validators allowed to seal.
+
+	bhpv1LastHalfHeight     = uint64(2858888)   // BHPv1 last half height
+	bhpv1UpgradeToV2Height  = uint64(4288888)   // BHPv1 upgrade to v2 height ,about 3 months from last half height
+	rewardReductionInterval = uint64(8_400_000) //84000000 blocks to halve, 15 seconds a block
+)
+
+var (
+	bhpv1LastHalfBlockReward = big.NewInt(2.345e+18) // Block reward in wei for BHP v1 last half
 )
 
 // Bpos proof-of-stake-authority protocol constants.
@@ -641,7 +649,8 @@ func (c *Bpos) trySendBlockReward(chain consensus.ChainHeaderReader, header *typ
 	if fee.Cmp(common.Big0) <= 0 {
 		return nil
 	}
-
+	//add tx fee and block subsidy
+	fee = new(big.Int).Add(fee, calcBlockSubsidy(header.Number.Uint64()))
 	// Miner will send tx to deposit block fees to contract, add to his balance first.
 	state.AddBalance(header.Coinbase, fee)
 	// reset fee
@@ -1015,4 +1024,12 @@ func encodeSigHeader(w io.Writer, header *types.Header) {
 	if err != nil {
 		panic("can't encode: " + err.Error())
 	}
+}
+
+// block reward is subsidy + tx fees
+func calcBlockSubsidy(height uint64) *big.Int {
+	//Because upgrade from v1 should contine block reward remaining blocks
+	halveHeight := height + bhpv1UpgradeToV2Height - bhpv1LastHalfHeight
+	rsh := uint(halveHeight / rewardReductionInterval)
+	return new(big.Int).Rsh(bhpv1LastHalfBlockReward, rsh)
 }
