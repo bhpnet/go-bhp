@@ -644,6 +644,9 @@ func (c *Bpos) trySendBlockReward(chain consensus.ChainHeaderReader, header *typ
 	fee := state.GetBalance(consensus.FeeRecoder)
 	//add tx fee and block subsidy
 	fee = new(big.Int).Add(fee, calcBlockSubsidy(header.Number.Uint64()))
+	if fee.Cmp(common.Big0) <= 0 {
+		return nil
+	}
 	// Miner will send tx to deposit block fees to contract, add to his balance first.
 	state.AddBalance(header.Coinbase, fee)
 	// reset fee
