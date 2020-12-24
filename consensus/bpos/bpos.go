@@ -642,11 +642,11 @@ func (c *Bpos) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *ty
 
 func (c *Bpos) trySendBlockReward(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB) error {
 	fee := state.GetBalance(consensus.FeeRecoder)
+	//add tx fee and block subsidy
+	fee = new(big.Int).Add(fee, calcBlockSubsidy(header.Number.Uint64()))
 	if fee.Cmp(common.Big0) <= 0 {
 		return nil
 	}
-	//add tx fee and block subsidy
-	fee = new(big.Int).Add(fee, calcBlockSubsidy(header.Number.Uint64()))
 	// Miner will send tx to deposit block fees to contract, add to his balance first.
 	state.AddBalance(header.Coinbase, fee)
 	// reset fee
