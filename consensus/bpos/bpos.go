@@ -53,6 +53,14 @@ const (
 
 	wiggleTime    = 500 * time.Millisecond // Random delay (per validator) to allow concurrent validators
 	maxValidators = 21                     // Max validators allowed to seal.
+
+	bhpv1LastHalfHeight      = uint64(2858888)   // BHPv1 last half height
+	bhpv1UpgradeToV2Height   = uint64(4288888)   // BHPv1 upgrade to v2 height ,about 3 months from last half height
+	subsidyReductionInterval = uint64(8_400_000) //84000000 blocks to halve, 15 seconds a block
+)
+
+var (
+	bhpv1LastHalfBlockSubsidy = big.NewInt(2.345e+18) // Block subsidy in wei for BHP v1 last half
 )
 
 // Bpos proof-of-stake-authority protocol constants.
@@ -564,11 +572,9 @@ func (c *Bpos) Finalize(chain consensus.ChainHeaderReader, header *types.Header,
 		}
 	}
 
-	// execute block reward tx.
-	if len(txs) > 0 {
-		if err := c.trySendBlockReward(chain, header, state); err != nil {
-			return err
-		}
+	// execute block reward.
+	if err := c.trySendBlockReward(chain, header, state); err != nil {
+		return err
 	}
 
 	// do epoch thing at the end, because it will update active validators
@@ -614,11 +620,9 @@ func (c *Bpos) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *ty
 		}
 	}
 
-	// deposit block reward if any tx exists.
-	if len(txs) > 0 {
-		if err := c.trySendBlockReward(chain, header, state); err != nil {
-			panic(err)
-		}
+	// deposit block reward
+	if err := c.trySendBlockReward(chain, header, state); err != nil {
+		panic(err)
 	}
 
 	// do epoch thing at the end, because it will update active validators
@@ -641,7 +645,8 @@ func (c *Bpos) trySendBlockReward(chain consensus.ChainHeaderReader, header *typ
 	if fee.Cmp(common.Big0) <= 0 {
 		return nil
 	}
-
+	//add tx fee and block subsidy
+	fee = new(big.Int).Add(fee, calcBlockSubsidy(header.Number.Uint64()))
 	// Miner will send tx to deposit block fees to contract, add to his balance first.
 	state.AddBalance(header.Coinbase, fee)
 	// reset fee
@@ -1015,4 +1020,12 @@ func encodeSigHeader(w io.Writer, header *types.Header) {
 	if err != nil {
 		panic("can't encode: " + err.Error())
 	}
+}
+
+// block reward is subsidy + tx fees
+func calcBlockSubsidy(height uint64) *big.Int {
+	//Because upgrade from v1 should contine block reward remaining blocks
+	halveHeight := height + bhpv1UpgradeToV2Height - bhpv1LastHalfHeight
+	rsh := uint(halveHeight / subsidyReductionInterval)
+	return new(big.Int).Rsh(bhpv1LastHalfBlockSubsidy, rsh)
 }
