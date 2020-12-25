@@ -56,7 +56,7 @@ var (
 		YoloV2Block:         big.NewInt(0),
 		Bpos: &BposConfig{
 			Period: 15,
-			Epoch:  200,
+			Epoch:  40,
 		},
 	}
 
@@ -76,7 +76,7 @@ var (
 		YoloV2Block:         big.NewInt(0),
 		Bpos: &BposConfig{
 			Period: 15,
-			Epoch:  200,
+			Epoch:  40,
 		},
 	}
 

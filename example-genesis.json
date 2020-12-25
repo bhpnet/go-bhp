@@ -13,7 +13,7 @@
     "muirGlacierBlock": 0,
     "bpos": {
       "period": 15,
-      "epoch": 200
+      "epoch": 40
     }
   },
   "nonce": "0x0",
