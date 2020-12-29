@@ -4,11 +4,26 @@ import (
 	"fmt"
 	"math"
 	"math/big"
-	"strings"
 	"testing"
 )
 
-func TestCalcBlockReward(t *testing.T) {
+func TestCalcTotalSupply(t *testing.T) {
+	// TODO: bhpnet finish unit test
+	totalSupply := big.NewInt(0)
+	for i := uint64(0); ; i++ {
+		blockSubsidy := calcBlockSubsidy(i)
+		if blockSubsidy.Cmp(big.NewInt(0)) == 0 ||
+			totalSupply.Cmp(new(big.Int).Mul(big.NewInt(1e8), big.NewInt(1e18))) == 1 {
+			break
+		}
+		totalSupply = new(big.Int).Add(totalSupply, blockSubsidy)
+		fmt.Println(i, "-----", totalSupply.String())
+	}
+	totalSupplyStr := totalSupply.String()
+	fmt.Println(totalSupplyStr)
+}
+
+func TestCalcBlockSubsidy(t *testing.T) {
 
 	type test struct {
 		height uint64
@@ -55,7 +70,7 @@ func TestCalcBlockReward(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%d", tt.height), func(t *testing.T) {
-			if got := calcBlockSubsidy(tt.height); strings.Compare(got.String(), tt.want.String()) != 0 {
+			if got := calcBlockSubsidy(tt.height); got.Cmp(tt.want) != 0 {
 				t.Errorf("hieght= %v, CalcBlockReward() = %v, want %v", tt.height, got, tt.want)
 			}
 		})
