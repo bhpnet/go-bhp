@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"strings"
 	"testing"
 )
 
-func TestCalcBlockSubsidy(t *testing.T) {
+func TestCalcBlockReward(t *testing.T) {
 
 	type test struct {
 		height uint64
@@ -54,62 +55,9 @@ func TestCalcBlockSubsidy(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%d", tt.height), func(t *testing.T) {
-			if got := calcBlockSubsidy(tt.height); got.Cmp(tt.want) != 0 {
+			if got := calcBlockSubsidy(tt.height); strings.Compare(got.String(), tt.want.String()) != 0 {
 				t.Errorf("hieght= %v, CalcBlockReward() = %v, want %v", tt.height, got, tt.want)
 			}
 		})
-	}
-}
-
-func TestCalcFundStakingSubsidy(t *testing.T) {
-	blockSubsidy := big.NewInt(0)
-	fundSubsidy, stakingSubsidy := calcFundStakingSubsidy(blockSubsidy)
-	if fundSubsidy.Cmp(big.NewInt(0)) != 0 || stakingSubsidy.Cmp(big.NewInt(0)) != 0 {
-		t.Errorf("block subsidy = %v , fund subsidy = %v, stakign subsidy = %v", blockSubsidy.String(), fundSubsidy.String(), stakingSubsidy.String())
-	}
-	blockSubsidy = big.NewInt(1)
-	fundSubsidy, stakingSubsidy = calcFundStakingSubsidy(blockSubsidy)
-	if fundSubsidy.Cmp(big.NewInt(0)) != 0 || stakingSubsidy.Cmp(big.NewInt(1)) != 0 {
-		t.Errorf("block subsidy = %v , fund subsidy = %v, stakign subsidy = %v", blockSubsidy.String(), fundSubsidy.String(), stakingSubsidy.String())
-	}
-	blockSubsidy = big.NewInt(2)
-	fundSubsidy, stakingSubsidy = calcFundStakingSubsidy(blockSubsidy)
-	if fundSubsidy.Cmp(big.NewInt(1)) != 0 || stakingSubsidy.Cmp(big.NewInt(1)) != 0 {
-		t.Errorf("block subsidy = %v , fund subsidy = %v, stakign subsidy = %v", blockSubsidy.String(), fundSubsidy.String(), stakingSubsidy.String())
-	}
-	blockSubsidy = big.NewInt(3)
-	fundSubsidy, stakingSubsidy = calcFundStakingSubsidy(blockSubsidy)
-	if fundSubsidy.Cmp(big.NewInt(2)) != 0 || stakingSubsidy.Cmp(big.NewInt(1)) != 0 {
-		t.Errorf("block subsidy = %v , fund subsidy = %v, stakign subsidy = %v", blockSubsidy.String(), fundSubsidy.String(), stakingSubsidy.String())
-	}
-	blockSubsidy = big.NewInt(9)
-	fundSubsidy, stakingSubsidy = calcFundStakingSubsidy(blockSubsidy)
-	if fundSubsidy.Cmp(big.NewInt(6)) != 0 || stakingSubsidy.Cmp(big.NewInt(3)) != 0 {
-		t.Errorf("block subsidy = %v , fund subsidy = %v, stakign subsidy = %v", blockSubsidy.String(), fundSubsidy.String(), stakingSubsidy.String())
-	}
-	blockSubsidy = big.NewInt(10)
-	fundSubsidy, stakingSubsidy = calcFundStakingSubsidy(blockSubsidy)
-	if fundSubsidy.Cmp(big.NewInt(7)) != 0 || stakingSubsidy.Cmp(big.NewInt(3)) != 0 {
-		t.Errorf("block subsidy = %v , fund subsidy = %v, stakign subsidy = %v", blockSubsidy.String(), fundSubsidy.String(), stakingSubsidy.String())
-	}
-	blockSubsidy = big.NewInt(11)
-	fundSubsidy, stakingSubsidy = calcFundStakingSubsidy(blockSubsidy)
-	if fundSubsidy.Cmp(big.NewInt(7)) != 0 || stakingSubsidy.Cmp(big.NewInt(4)) != 0 {
-		t.Errorf("block subsidy = %v , fund subsidy = %v, stakign subsidy = %v", blockSubsidy.String(), fundSubsidy.String(), stakingSubsidy.String())
-	}
-	blockSubsidy = big.NewInt(100)
-	fundSubsidy, stakingSubsidy = calcFundStakingSubsidy(blockSubsidy)
-	if fundSubsidy.Cmp(big.NewInt(70)) != 0 || stakingSubsidy.Cmp(big.NewInt(30)) != 0 {
-		t.Errorf("block subsidy = %v , fund subsidy = %v, stakign subsidy = %v", blockSubsidy.String(), fundSubsidy.String(), stakingSubsidy.String())
-	}
-	blockSubsidy, _ = new(big.Int).SetString("1000000000000000000", 10)
-	fundSubsidy, stakingSubsidy = calcFundStakingSubsidy(blockSubsidy)
-	if fundSubsidy.Cmp(big.NewInt(7e17)) != 0 || stakingSubsidy.Cmp(big.NewInt(3e17)) != 0 {
-		t.Errorf("block subsidy = %v , fund subsidy = %v, stakign subsidy = %v", blockSubsidy.String(), fundSubsidy.String(), stakingSubsidy.String())
-	}
-	blockSubsidy = bhpv1LastHalfBlockSubsidy
-	fundSubsidy, stakingSubsidy = calcFundStakingSubsidy(blockSubsidy)
-	if fundSubsidy.Cmp(big.NewInt(1.6415e18)) != 0 || stakingSubsidy.Cmp(big.NewInt(7.035e17)) != 0 {
-		t.Errorf("block subsidy = %v , fund subsidy = %v, stakign subsidy = %v", blockSubsidy.String(), fundSubsidy.String(), stakingSubsidy.String())
 	}
 }

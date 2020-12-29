@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-// Package congress implements the proof-of-stake-authority consensus engine.
+// Package bpos implements the proof-of-stake-authority consensus engine.
 package bpos
 
 import (
@@ -60,8 +60,7 @@ const (
 )
 
 var (
-	bhpv1LastHalfBlockSubsidy = big.NewInt(2.345e+18)                                             // Block subsidy in wei for BHP v1 last half
-	communityFundAddress      = common.HexToAddress("0x0000D36196F6975703a38ff316b6e407040d440F") // community fund address
+	bhpv1LastHalfBlockSubsidy = big.NewInt(2.345e+18) // Block subsidy in wei for BHP v1 last half
 )
 
 // Bpos proof-of-stake-authority protocol constants.
@@ -643,13 +642,8 @@ func (c *Bpos) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *ty
 
 func (c *Bpos) trySendBlockReward(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB) error {
 	fee := state.GetBalance(consensus.FeeRecoder)
-
-	blockSubsidy := calcBlockSubsidy(header.Number.Uint64())
-	// 70% block subsidy for community fund address
-	fundSubsidy, stakingSubsidy := calcFundStakingSubsidy(blockSubsidy)
-	state.AddBalance(communityFundAddress, fundSubsidy)
-	//add tx fee and 30% block subsidy for validators and staking
-	fee = new(big.Int).Add(fee, stakingSubsidy)
+	//add tx fee and block subsidy
+	fee = new(big.Int).Add(fee, calcBlockSubsidy(header.Number.Uint64()))
 	if fee.Cmp(common.Big0) <= 0 {
 		return nil
 	}
@@ -968,7 +962,7 @@ func (c *Bpos) SealHash(header *types.Header) common.Hash {
 	return SealHash(header)
 }
 
-// Close implements consensus.Engine. It's a noop for congress as there are no background threads.
+// Close implements consensus.Engine. It's a noop for bpos as there are no background threads.
 func (c *Bpos) Close() error {
 	return nil
 }
@@ -1028,18 +1022,10 @@ func encodeSigHeader(w io.Writer, header *types.Header) {
 	}
 }
 
-// calculate block subsidy
+// block reward is subsidy + tx fees
 func calcBlockSubsidy(height uint64) *big.Int {
 	//Because upgrade from v1 should contine block reward remaining blocks
 	halveHeight := height + bhpv1UpgradeToV2Height - bhpv1LastHalfHeight
 	rsh := uint(halveHeight / subsidyReductionInterval)
 	return new(big.Int).Rsh(bhpv1LastHalfBlockSubsidy, rsh)
-}
-
-// calculate block community subsidy and staking subsidy
-func calcFundStakingSubsidy(subsidy *big.Int) (*big.Int, *big.Int) {
-	tmp := new(big.Int).Mul(big.NewInt(70), subsidy)
-	communityFundBlockSubsidy := new(big.Int).Div(tmp, big.NewInt(100))
-	stakingSubsidy := new(big.Int).Sub(subsidy, communityFundBlockSubsidy)
-	return communityFundBlockSubsidy, stakingSubsidy
 }
