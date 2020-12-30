@@ -7,20 +7,29 @@ import (
 	"testing"
 )
 
+//block explorer:  Height: 3,883,759  total: 63,214,825.02
+// current block subsidy is 2.345
+//
+// go test -v -run ^TestCalcTotalSupply$ github.com/ethereum/go-ethereum/consensus/bpos
 func TestCalcTotalSupply(t *testing.T) {
-	// TODO: bhpnet finish unit test
-	totalSupply := big.NewInt(0)
+	height := uint64(3883759)
+	totalSupplyAtHeight3883759 := new(big.Int).Mul(big.NewInt(6321482502), big.NewInt(1e16))
+	currentBlockSubsidy := new(big.Int).Mul(big.NewInt(2345), big.NewInt(1e15))
+	upgradeHeightTotalSupply := new(big.Int).Add(totalSupplyAtHeight3883759,
+		new(big.Int).Mul(big.NewInt(int64(bhpv1UpgradeToV2Height-height)), currentBlockSubsidy))
+
+	totalSupply := upgradeHeightTotalSupply
 	for i := uint64(0); ; i++ {
 		blockSubsidy := calcBlockSubsidy(i)
-		if blockSubsidy.Cmp(big.NewInt(0)) == 0 ||
-			totalSupply.Cmp(new(big.Int).Mul(big.NewInt(1e8), big.NewInt(1e18))) == 1 {
+		if blockSubsidy.Cmp(big.NewInt(0)) == 0 {
 			break
 		}
 		totalSupply = new(big.Int).Add(totalSupply, blockSubsidy)
-		fmt.Println(i, "-----", totalSupply.String())
 	}
-	totalSupplyStr := totalSupply.String()
-	fmt.Println(totalSupplyStr)
+	t.Log("Total supply is: ", totalSupply.String())
+	if totalSupply.Cmp(new(big.Int).Mul(big.NewInt(1_000_536_119), big.NewInt(1e17))) != 0 {
+		t.Errorf("Total supply should be 100053611900000000000000000 ,but get %s\n", totalSupply.String())
+	}
 }
 
 func TestCalcBlockSubsidy(t *testing.T) {
@@ -29,7 +38,7 @@ func TestCalcBlockSubsidy(t *testing.T) {
 		height uint64
 		want   *big.Int
 	}
-	tests := make([]test, 12)
+	tests := make([]test, 9)
 	tests[0] = test{0, bhpv1LastHalfBlockSubsidy}
 	tests[1] = test{1, bhpv1LastHalfBlockSubsidy}
 
@@ -55,16 +64,6 @@ func TestCalcBlockSubsidy(t *testing.T) {
 		new(big.Int).Quo(bhpv1LastHalfBlockSubsidy, big.NewInt(int64(math.Pow(2, 2))))}
 
 	tests[8] = test{
-		subsidyReductionInterval*62 - 1 - v1UpgradeHeighDiff,
-		big.NewInt(1)}
-	tests[9] = test{
-		subsidyReductionInterval*62 - v1UpgradeHeighDiff,
-		big.NewInt(0)}
-	tests[10] = test{
-		subsidyReductionInterval*62 + 1 - v1UpgradeHeighDiff,
-		big.NewInt(0)}
-
-	tests[11] = test{
 		18446744073709551615 - v1UpgradeHeighDiff, //uint64 max and prevent overflow
 		big.NewInt(0)}
 

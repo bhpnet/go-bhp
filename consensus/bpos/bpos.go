@@ -1027,5 +1027,8 @@ func calcBlockSubsidy(height uint64) *big.Int {
 	//Because upgrade from v1 should contine block reward remaining blocks
 	halveHeight := height + bhpv1UpgradeToV2Height - bhpv1LastHalfHeight
 	rsh := uint(halveHeight / subsidyReductionInterval)
+	if rsh >= 8 { //we should return 0 early because of bhp v1 has halved
+		return big.NewInt(0)
+	}
 	return new(big.Int).Rsh(bhpv1LastHalfBlockSubsidy, rsh)
 }
