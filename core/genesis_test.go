@@ -17,7 +17,6 @@
 package core
 
 import (
-	"fmt"
 	"math/big"
 	"reflect"
 	"testing"
@@ -33,15 +32,13 @@ import (
 
 func TestDefaultGenesisBlock(t *testing.T) {
 	block := DefaultGenesisBlock().ToBlock(nil)
-	fmt.Println(block.Hash())
-	//if block.Hash() != params.MainnetGenesisHash {
-	//	t.Errorf("wrong mainnet genesis hash, got %v, want %v", block.Hash(), params.MainnetGenesisHash)
-	//}
+	if block.Hash() != params.MainnetGenesisHash {
+		t.Errorf("wrong mainnet genesis hash, got %v, want %v", block.Hash(), params.MainnetGenesisHash)
+	}
 	block = DefaultTestnetGenesisBlock().ToBlock(nil)
-	fmt.Println(block.Hash())
-	//if block.Hash() != params.RopstenGenesisHash {
-	//	t.Errorf("wrong ropsten genesis hash, got %v, want %v", block.Hash(), params.RopstenGenesisHash)
-	//}
+	if block.Hash() != params.TestnetGenesisHash {
+		t.Errorf("wrong ropsten genesis hash, got %v, want %v", block.Hash(), params.TestnetGenesisHash)
+	}
 }
 
 func TestSetupGenesis(t *testing.T) {
