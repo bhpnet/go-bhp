@@ -156,9 +156,10 @@ func (in *EVMInterpreter) Run(contract *Contract, input []byte, readOnly bool) (
 	in.returnData = nil
 
 	// Don't bother with the execution if there's no code.
-	if len(contract.Code) == 0 {
-		return nil, nil
-	}
+	// TODO BHPNET temporary fix for issue
+	//if len(contract.Code) == 0 {
+	//	return nil, nil
+	//}
 
 	var (
 		op          OpCode             // current opcode
