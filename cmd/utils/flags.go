@@ -1797,9 +1797,6 @@ func MakeChain(ctx *cli.Context, stack *node.Node, readOnly bool) (chain *core.B
 	if err != nil {
 		Fatalf("Can't create BlockChain: %v", err)
 	}
-	if bposEngine, ok := engine.(*bpos.Bpos); ok {
-		bposEngine.SetStateFn(chain.StateAt)
-	}
 	return chain, chainDb
 }
 

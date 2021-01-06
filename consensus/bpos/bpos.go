@@ -20,6 +20,7 @@ package bpos
 import (
 	"bytes"
 	"errors"
+	"github.com/ethereum/go-ethereum/core"
 	"io"
 	"math"
 	"math/big"
@@ -94,6 +95,9 @@ var (
 	// errUnknownBlock is returned when the list of validators is requested for a block
 	// that is not part of the local blockchain.
 	errUnknownBlock = errors.New("unknown block")
+
+	//
+	errBlockChainStateAt = errors.New("blockChain stateAt")
 
 	// errMissingVanity is returned if a block's extra-data section is shorter than
 	// 32 bytes, which is required to store the validator vanity.
@@ -204,8 +208,6 @@ type Bpos struct {
 	signFn    ValidatorFn    // Validator function to authorize hashes with
 	lock      sync.RWMutex   // Protects the validator fields
 
-	stateFn StateFn // Function to get state by state root
-
 	abi map[string]abi.ABI // Interactive with system contracts
 
 	// The fields below are for testing only
@@ -235,11 +237,6 @@ func New(chainConfig *params.ChainConfig, db ethdb.Database) *Bpos {
 		proposals:   make(map[common.Address]bool),
 		abi:         abi,
 	}
-}
-
-// SetStateFn sets the function to get state.
-func (c *Bpos) SetStateFn(fn StateFn) {
-	c.stateFn = fn
 }
 
 // Author implements consensus.Engine, returning the Ethereum address recovered
@@ -755,13 +752,22 @@ func (c *Bpos) initializeSystemContracts(chain consensus.ChainHeaderReader, head
 
 // call this at epoch block to get top validators based on the state of epoch block - 1
 func (c *Bpos) getTopValidators(chain consensus.ChainHeaderReader, header *types.Header) ([]common.Address, error) {
+	var (
+		statedb *state.StateDB
+		err     error
+	)
 	parent := chain.GetHeader(header.ParentHash, header.Number.Uint64()-1)
 	if parent == nil {
 		return []common.Address{}, consensus.ErrUnknownAncestor
 	}
-	statedb, err := c.stateFn(parent.Root)
-	if err != nil {
-		return []common.Address{}, err
+
+	if blockChain, ok := chain.(*core.BlockChain); ok {
+		statedb, err = blockChain.StateAt(parent.Root)
+		if err != nil {
+			return []common.Address{}, err
+		}
+	} else {
+		return []common.Address{}, errBlockChainStateAt
 	}
 
 	method := "getTopValidators"

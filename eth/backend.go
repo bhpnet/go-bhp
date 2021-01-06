@@ -185,11 +185,6 @@ func New(stack *node.Node, config *Config) (*Ethereum, error) {
 	}
 	eth.bloomIndexer.Start(eth.blockchain)
 
-	// set state fn if consensus engine is congress.
-	if bposEngine, ok := eth.engine.(*bpos.Bpos); ok {
-		bposEngine.SetStateFn(eth.blockchain.StateAt)
-	}
-
 	if config.TxPool.Journal != "" {
 		config.TxPool.Journal = stack.ResolvePath(config.TxPool.Journal)
 	}
