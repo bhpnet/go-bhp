@@ -52,7 +52,7 @@ var (
 		ConstantinopleBlock: big.NewInt(0),
 		PetersburgBlock:     big.NewInt(0),
 		IstanbulBlock:       big.NewInt(0),
-		MuirGlacierBlock:    nil,
+		MuirGlacierBlock:    big.NewInt(0),
 		Bpos: &BposConfig{
 			Period: 15,
 			Epoch:  40,
@@ -71,7 +71,7 @@ var (
 		ConstantinopleBlock: big.NewInt(0),
 		PetersburgBlock:     big.NewInt(0),
 		IstanbulBlock:       big.NewInt(0),
-		MuirGlacierBlock:    nil,
+		MuirGlacierBlock:    big.NewInt(0),
 		Bpos: &BposConfig{
 			Period: 15,
 			Epoch:  40,
