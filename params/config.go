@@ -27,8 +27,8 @@ import (
 
 // Genesis hashes to enforce below configs on.
 var (
-	MainnetGenesisHash = common.HexToHash("0x78d5e3623b972f5c3952785796f62f9b606f7c2cc2cf37e89767ee6605fc2863")
-	TestnetGenesisHash = common.HexToHash("0x78d5e3623b972f5c3952785796f62f9b606f7c2cc2cf37e89767ee6605fc2863")
+	MainnetGenesisHash = common.HexToHash("0x761949f9452250477190a52171d10ac5413e8e1c8711367eab6737daf58b0f77")
+	TestnetGenesisHash = common.HexToHash("0x761949f9452250477190a52171d10ac5413e8e1c8711367eab6737daf58b0f77")
 )
 
 // TrustedCheckpoints associates each known checkpoint with the genesis hash of
@@ -53,7 +53,6 @@ var (
 		PetersburgBlock:     big.NewInt(0),
 		IstanbulBlock:       big.NewInt(0),
 		MuirGlacierBlock:    nil,
-		YoloV2Block:         big.NewInt(0),
 		Bpos: &BposConfig{
 			Period: 15,
 			Epoch:  40,
@@ -73,7 +72,6 @@ var (
 		PetersburgBlock:     big.NewInt(0),
 		IstanbulBlock:       big.NewInt(0),
 		MuirGlacierBlock:    nil,
-		YoloV2Block:         big.NewInt(0),
 		Bpos: &BposConfig{
 			Period: 15,
 			Epoch:  40,
