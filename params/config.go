@@ -53,7 +53,6 @@ var (
 		PetersburgBlock:     big.NewInt(0),
 		IstanbulBlock:       big.NewInt(0),
 		MuirGlacierBlock:    nil,
-		YoloV2Block:         big.NewInt(0),
 		Bpos: &BposConfig{
 			Period: 15,
 			Epoch:  40,
@@ -73,7 +72,6 @@ var (
 		PetersburgBlock:     big.NewInt(0),
 		IstanbulBlock:       big.NewInt(0),
 		MuirGlacierBlock:    nil,
-		YoloV2Block:         big.NewInt(0),
 		Bpos: &BposConfig{
 			Period: 15,
 			Epoch:  40,
