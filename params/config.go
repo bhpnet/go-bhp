@@ -41,7 +41,7 @@ var CheckpointOracles = map[common.Hash]*CheckpointOracleConfig{}
 
 var (
 	MainnetChainConfig = &ChainConfig{
-		ChainID:             big.NewInt(6794),
+		ChainID:             big.NewInt(6779),
 		HomesteadBlock:      big.NewInt(0),
 		DAOForkBlock:        nil,
 		DAOForkSupport:      false,
