@@ -13,6 +13,11 @@ gbhp:
 	@echo "Done building."
 	@echo "Run \"$(GOBIN)/gbhp\" to launch gbhp."
 
+bootnode:
+	$(GORUN) build/ci.go install ./cmd/bootnode
+	@echo "Done building."
+	@echo "Run \"$(GOBIN)/bootnode\" to launch bootnode."
+
 all:
 	$(GORUN) build/ci.go install
 
